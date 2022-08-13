@@ -20,14 +20,9 @@ class Exportador():
     def direccion(self):
         return self._direccion
 
-    def exportar_excel(self, nombre):
+    def exportar_excel(self, direccion):
         df = self.datos
-        direccion_salida = (os.path.expanduser('~/Desktop')+f'/{nombre}.xlsx').\
-                            replace('\\', '/')
-        df.to_excel(direccion_salida,
-                    engine='openpyxl',
-                    index=False)
-
+        df.to_excel(direccion, engine='openpyxl', index=False)
 
 if __name__ == '__main__':
     direccion_1 = 'C:/'

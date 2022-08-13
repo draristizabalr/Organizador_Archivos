@@ -1,14 +1,13 @@
-import os
 from Exportador import Exportador
 
-direccion = str(input('Escribir dirección de la carpeta: '))
 
-print(direccion)
-df = Exportador(direccion)
-print(df.datos)
+def Crear_Tabla_Excel(direccion_analisis, direccion_entrega, nombre_archivo):
+    direccion_analisis = direccion_analisis.replace('\\', '/')
+    direccion_entrega = direccion_entrega.replace('\\', '/')
+    df = Exportador(direccion_analisis)
+    df.exportar_excel(f'{direccion_entrega}/{nombre_archivo}.xlsx')
+    print('El archivo está en la dirección')
+    print(direccion_entrega)
 
-nombre = str(input('Nombre del archivo a crear: '))
-df.exportar_excel(nombre)
-
-print('El archivo está en la dirección')
-print((os.path.expanduser('~/Desktop')+f'/{nombre}.xlsx').replace('\\', '/'))
+if __name__ == '__main__':
+    Crear_Tabla_Excel('C:/', 'C:/David/Programas/Programa Santiago/', 'Archivo')

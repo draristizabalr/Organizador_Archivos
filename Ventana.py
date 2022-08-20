@@ -1,5 +1,4 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QStackedLayout, QWidget, \
     QLabel, QGridLayout, QLineEdit, QTreeView, QFileSystemModel
 
@@ -58,11 +57,14 @@ class Window(QMainWindow):
         self.boton_una_carpeta = QPushButton('Carpeta principal')
         self.boton_una_carpeta.setStyleSheet('QPushButton{font-size: 16pt;'
                                              '          font-family: "Times New Roman", Times, serif;}')
-        self.boton_una_carpeta.clicked.connect(self.analisar_una_carpeta)
+        self.boton_una_carpeta.clicked.connect(self.buscar_carpeta)
 
         self.boton_todas_carpetas = QPushButton('Carpeta principal y subcarpetas')
         self.boton_todas_carpetas.setStyleSheet('QPushButton{font-size: 16pt;'
                                                 '            font-family: "Times New Roman", Times, serif;}')
+        self.boton_todas_carpetas.clicked.connect(lambda: self.modificar_direccion(
+            self.conseguir_direccion(self.explorador_buscar, self.modelo_buscar),
+        ))
 
         # Creamos las etiquetas
         etiqueta_buscar = QLabel('Buscar en:')
@@ -100,7 +102,7 @@ class Window(QMainWindow):
         # Publicamos el componente
         self.setCentralWidget(componente)
 
-    def analisar_una_carpeta(self):
+    def buscar_carpeta(self):
         direccion_buscar = self.conseguir_direccion(self.explorador_buscar, self.modelo_buscar)
         direccion_guardar = self.conseguir_direccion(self.explorador_guardar, self.modelo_guardar)
         nombre_archivo = self.nombre_archivo.text()
@@ -113,7 +115,8 @@ class Window(QMainWindow):
         index = explorador.currentIndex()
         return modelo.filePath(index)
 
-
+    def modificar_direccion(self, direccion):
+        
 
 if __name__ == '__main__':
     app = QApplication([])

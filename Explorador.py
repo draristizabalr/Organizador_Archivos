@@ -34,9 +34,10 @@ class Explorador():
     
     def carpetas(self):
         carpetas = []
-        for arch in os.scandir(self.direccion):
-            if not arch.is_file():
-                carpetas.append(arch.name)
+        for folder in os.scandir(self.direccion):
+            if not folder.is_file():
+                if folder.name[0] != '$':
+                    carpetas.append(folder.name)
             
         return carpetas
 

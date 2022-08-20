@@ -4,21 +4,18 @@ import pandas as pd
 from Organizador import Organizador
 from Explorador import Explorador
 
-class Exportador():
+class Exportador(Organizador):
+
+    titulos = ['Nombre', 'Tipo de Archivo', 'Tamaño', 'Unidad', 'Dirección']
 
     def __init__(self, direccion):
-        titulos = ['Nombre', 'Tipo de Archivo', 'Tamaño', 'Unidad', 'Dirección']
-        self._direccion = direccion
-        self._datos = pd.DataFrame(Organizador(Explorador(direccion)).lista_archivos,
-                                   columns=titulos)
+        super().__init__(direccion)
+        self._datos = pd.DataFrame(self.lista_archivos,
+                                   columns=Exportador.titulos)
 
     @property
     def datos(self):
         return self._datos
-
-    @property
-    def direccion(self):
-        return self._direccion
 
     def exportar_excel(self, direccion):
         df = self.datos
@@ -28,6 +25,7 @@ if __name__ == '__main__':
     direccion_1 = 'C:/'
     df = Exportador(direccion_1)
     print(df.datos)
-    df.exportar_excel
+    print(df.carpetas())
+    df.exportar_excel('C:/David/Programas/Index.xlsx')
 
 

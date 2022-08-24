@@ -1,6 +1,8 @@
-from PySide6.QtCore import Qt
+from openpyxl import load_workbook
+import pandas as pd
+from PySide6.QtCore import Qt, QDir
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QStackedLayout, QWidget, \
-    QLabel, QGridLayout, QLineEdit, QTreeView, QFileSystemModel
+    QLabel, QGridLayout, QLineEdit, QTreeView, QFileSystemModel, QMessageBox
 
 from Exportador import Exportador
 
@@ -24,8 +26,11 @@ class Window(QMainWindow):
         # Creamos objeto lector de archivos
         self.modelo_buscar = QFileSystemModel()
         self.modelo_buscar.setRootPath('')
+        self.modelo_buscar.setFilter(QDir.AllDirs | QDir.NoDotAndDotDot)
+
         self.modelo_guardar = QFileSystemModel()
         self.modelo_guardar.setRootPath('')
+        self.modelo_guardar.setFilter(QDir.AllDirs | QDir.NoDotAndDotDot)
 
         # Creamos los árboles de directorios
         self.explorador_buscar = QTreeView()
@@ -62,9 +67,7 @@ class Window(QMainWindow):
         self.boton_todas_carpetas = QPushButton('Carpeta principal y subcarpetas')
         self.boton_todas_carpetas.setStyleSheet('QPushButton{font-size: 16pt;'
                                                 '            font-family: "Times New Roman", Times, serif;}')
-        self.boton_todas_carpetas.clicked.connect(lambda: self.modificar_direccion(
-            self.conseguir_direccion(self.explorador_buscar, self.modelo_buscar),
-        ))
+        self.boton_todas_carpetas.clicked.connect(lambda: self.buscar_carpeta(True))
 
         # Creamos las etiquetas
         etiqueta_buscar = QLabel('Buscar en:')
@@ -102,21 +105,44 @@ class Window(QMainWindow):
         # Publicamos el componente
         self.setCentralWidget(componente)
 
-    def buscar_carpeta(self):
+    def buscar_carpeta(self, todos=False):
         direccion_buscar = self.conseguir_direccion(self.explorador_buscar, self.modelo_buscar)
         direccion_guardar = self.conseguir_direccion(self.explorador_guardar, self.modelo_guardar)
-        nombre_archivo = self.nombre_archivo.text()
+
+        while True:
+            if self.nombre_archivo.text():
+                nombre_archivo = self.nombre_archivo.text()
+                break
+            else:
+                return QMessageBox.about(self, 'ERROR', 'Agregar nombre al archivo')
+
         direccion_buscar = direccion_buscar.replace('\\', '/')
         direccion_guardar = direccion_guardar.replace('\\', '/')
+        direccion_guardar = f'{direccion_guardar}/{nombre_archivo}.xlsx'
         df = Exportador(direccion_buscar)
-        df.exportar_excel(f'{direccion_guardar}/{nombre_archivo}.xlsx')
+        df.exportar_excel(direccion_guardar)
+        if todos:
+            libro_excel = load_workbook(direccion_guardar)
+            writer = pd.ExcelWriter(direccion_guardar, engine='openpyxl')
+            writer.book = libro_excel
+            carpetas = df.carpetas()
+            for carpeta in carpetas:
+                df_n = Exportador(f'{direccion_buscar}/{carpeta}/')
+                df_n.datos.to_excel(writer, sheet_name=f'{carpeta}', index=False)
+
+            writer.close()
+
+        return QMessageBox.about(self, '¡Archivo Creado!',
+                                 f'El archivo "{nombre_archivo}.xlsx" fue creado exitosamente en:\n\n'
+                                 f'{direccion_guardar}')
 
     def conseguir_direccion(self, explorador: QTreeView, modelo: QFileSystemModel):
         index = explorador.currentIndex()
         return modelo.filePath(index)
 
-    def modificar_direccion(self, direccion):
-        
+
+
+
 
 if __name__ == '__main__':
     app = QApplication([])

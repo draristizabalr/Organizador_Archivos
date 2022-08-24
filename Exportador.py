@@ -1,8 +1,6 @@
-import os.path
-
+import openpyxl
 import pandas as pd
 from Organizador import Organizador
-from Explorador import Explorador
 
 class Exportador(Organizador):
 
@@ -19,7 +17,8 @@ class Exportador(Organizador):
 
     def exportar_excel(self, direccion):
         df = self.datos
-        df.to_excel(direccion, engine='openpyxl', index=False)
+        df.to_excel(direccion, engine='openpyxl', index=False, sheet_name='Carpeta Principal')
+
 
 if __name__ == '__main__':
     direccion_1 = 'C:/'
@@ -27,5 +26,6 @@ if __name__ == '__main__':
     print(df.datos)
     print(df.carpetas())
     df.exportar_excel('C:/David/Programas/Index.xlsx')
+    df.escribir_excel('C:/David/Programas/Index.xlsx')
 
 

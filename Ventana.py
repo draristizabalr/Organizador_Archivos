@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QStackedLa
 from Exportador import Exportador
 
 
-class Window(QMainWindow):
+class Ventana(QMainWindow):
     def __init__(self):
         super().__init__()
         self.direccion_buscar = ''
